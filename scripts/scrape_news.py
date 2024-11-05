@@ -1,4 +1,5 @@
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import time
@@ -14,10 +15,19 @@ def initialize_web_driver(url):
 
     return driver
 
+def click_button(selector_type, selector_name):
+    try:
+        button = driver.find_element(selector_type, selector_name)
+        button.click()
+    except Exception as e:
+        print(f"Could not find or click the butto: {e}")
+
 driver = initialize_web_driver('https://www.rtbf.be/en-continu')
+click_button(By.ID, "didomi-notice-agree-button")
+click_button(By.CLASS_NAME, "border-yellow-500")
 
 
-# time.sleep(10)
+
 
 # driver.quit()
 
