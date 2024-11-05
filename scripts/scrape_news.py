@@ -1,3 +1,4 @@
+from selenium.common.exceptions import NoSuchElementException, ElementClickInterceptedException
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium import webdriver
@@ -5,50 +6,8 @@ from bs4 import BeautifulSoup
 import requests
 from datetime import datetime
 import time
-
-# def initialize_web_driver(url):
-#     # Specify the path to ChromeDriver using the Service object
-#     service = Service('/usr/local/bin/chromedriver')
-
-#     # Initialize the webdriver to automate interactions with the website to be scraped
-#     driver = webdriver.Chrome(service = service)
-
-#     driver.get(url)
-
-#     return driver
-
-# def click_button(selector_type, selector_name):
-#     try:
-#         button = driver.find_element(selector_type, selector_name)
-#         button.click()
-#     except Exception as e:
-#         print(f"Could not find or click the butto: {e}")
-
-# def collect_article_links(selector_type, selector_name):
-#     article_links = driver.find_elements(selector_type, selector_name)
-    
-#     try:
-#         for link in article_links:
-#             link.click()
-#             time.sleep(2)
-#             driver.back()
-#     except Exception as e:
-#         print(f"Could not lick on the article link: {e}")
-
-# driver = initialize_web_driver('https://www.rtbf.be/en-continu')
-# time.sleep(2)
-# click_button(By.ID, "didomi-notice-agree-button")
-# time.sleep(2)
-# click_button(By.CLASS_NAME, "border-yellow-500")
-# time.sleep(2)
-# article_links = collect_article_links(By.CLASS_NAME, "stretched-link")
-
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException, ElementClickInterceptedException
-import time
-from bs4 import BeautifulSoup
+import json
+import os
 
 def load_more_articles(driver, button_class, click_count=75):
     """
@@ -162,16 +121,24 @@ def scrape_article_data(article_url):
     
     return article_data
 
+def save_to_json(data, filename="data/articles_RTBF.json"):
+    """
+    Saves the data to a JSON file at a relative path.
+    
+    Parameters:
+    data (list): The list of dictionaries containing article data.
+    filename (str): The relative path to the JSON file.
+    """
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    
+    # Write data to the JSON file
+    with open(filename, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+    print(f"Data successfully saved to {filename}")
+
 # Usage example
-article_links = get_article_links("https://www.rtbf.be/en-continu", "border-yellow-500", click_count=10)
+article_links = get_article_links("https://www.rtbf.be/en-continu", "border-yellow-500", click_count=5)
 all_articles_data = scrape_all_articles(article_links)
-print(all_articles_data)
+save_to_json(all_articles_data, "data/articles_RTBF.json")
 
-# driver.quit()
-
-# rejoindre la page source
-# s'occuper éventuellement des cookies
-# cliquer sur chaque titre while True
-# cliquer sur charger 20 articles supplémentaires (100 fois)
-
-# sur la page, scraper le titre, scraper le texte de l'article (peut être en plusieurs morceaux)
