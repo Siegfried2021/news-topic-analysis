@@ -1,14 +1,11 @@
 import json
 import re
+import os
+import spacy
+import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
-import spacy
-import gensim
-from gensim import corpora
-from gensim.models import LdaModel
-import nltk
-import os
 
 # Load data
 with open("data/articles_RTBF.json", "r") as file:
@@ -18,7 +15,7 @@ with open("data/articles_RTBF.json", "r") as file:
 nltk.download('stopwords')
 nltk.download('punkt_tab')
 nltk.download('wordnet')
-stop_words = set(stopwords.words('french'))
+french_stopwords = set(stopwords.words("french"))
 lemmatizer = WordNetLemmatizer()
 
 # Load Spacy French model for lemmatization
@@ -26,25 +23,37 @@ nlp = spacy.load("fr_core_news_md")
 
 # Preprocess function
 def preprocess_text(text):
-    # Remove non-alphanumeric characters, except punctuation
-    text = re.sub(r'[^a-zA-ZÀ-ÿ0-9.,!?\'\s]', '', text)
+    # Tokenize the text with nltk
+    tokens = word_tokenize(text, language='french')
     
-    # Tokenize
-    tokens = word_tokenize(text)
+    # Filter out punctuation and stop words
+    tokens = [token for token in tokens if token.isalnum() and token.lower() not in french_stopwords]
     
-    # Remove stopwords and lemmatize
-    tokens = [lemmatizer.lemmatize(word.lower()) for word in tokens if word.lower() not in stop_words]
+    # Lemmatize using spacy
+    doc = nlp(" ".join(tokens))
+    lemmatized_tokens = [token.lemma_ for token in doc]
     
-    return tokens
+    return lemmatized_tokens
 
-# Process both content and title for each article
-processed_data = []
-for article in data:
-    processed_content = preprocess_text(article["content"])
-    processed_title = preprocess_text(article["title"])
-    processed_data.append({
-        "date": article.get("date"),
-        "processed_content": processed_content,
-        "processed_title": processed_title
-    })
+def preprocess_and_save(data, output_filename):
+    processed_data = []
+    
+    for article in data:
+        # Process the title and content using a custom preprocess_text function
+        processed_content = preprocess_text(article["content"])
+        processed_title = preprocess_text(article["title"])
+        
+        # Append the processed article to the list
+        processed_data.append({
+            "date": article.get("date"),
+            "processed_content": processed_content,
+            "processed_title": processed_title
+        })
+    
+    os.makedirs(os.path.dirname(output_filename), exist_ok=True)
 
+    # Save processed data to a JSON file
+    with open(output_filename, "w", encoding='utf-8') as outfile:
+        json.dump(processed_data, outfile, ensure_ascii=False, indent=4)
+
+preprocess_and_save(data, "data/processed_articles_RTBF.json")
