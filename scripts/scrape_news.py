@@ -138,6 +138,6 @@ def save_to_json(data, filename="data/articles_RTBF.json"):
     print(f"Data successfully saved to {filename}")
 
 # Usage example
-article_links = get_article_links("https://www.rtbf.be/en-continu", "border-yellow-500", click_count=100)
+article_links = get_article_links("https://www.rtbf.be/en-continu", "border-yellow-500", click_count=150)
 all_articles_data = scrape_all_articles(article_links)
 save_to_json(all_articles_data, "data/articles_RTBF.json")
