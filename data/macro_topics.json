@@ -1,0 +1,73 @@
+{
+    "Politique": ["élection", "bourgmestre", "commune", "parlement", "gouvernement", "réforme", "député", "politique", "vote", "budget",
+                  "ministre", "région", "parti", "mandat", "conseil", "électeur", "démocratie", "alliance", "fédéral", "canton"],
+    
+    "Économie": ["emploi", "entreprise", "commerce", "finance", "marché", "syndicat", "salaire", "banque", "croissance", "taxe",
+                 "budget", "impôt", "chômage", "revenu", "crédit", "investissement", "fiscalité", "reprise", "subvention", "secteur"],
+    
+    "Santé": ["hôpital", "soins", "clinique", "infirmier", "médecin", "urgence", "vaccin", "virus", "maladie", "sécurité",
+              "bien-être", "mental", "symptôme", "prévention", "pharmacie", "service", "patient", "épidémie", "santé", "assurance"],
+    
+    "Éducation": ["école", "étudiant", "professeur", "université", "collège", "formation", "diplôme", "enseignement", "apprentissage", "classe",
+                  "savoir", "lycée", "programme", "examens", "pédagogie", "lecture", "primaire", "bourse", "parcours", "scolarité"],
+    
+    "Justice": ["police", "tribunal", "jugement", "procès", "arrestation", "avocat", "crime", "plainte", "victime", "enquête",
+                "suspect", "détenu", "amende", "peine", "sanction", "loi", "code", "justice", "inculpation", "verdict"],
+    
+    "Communauté": ["événement", "quartier", "association", "bénévolat", "projet", "aide", "initiative", "festival", "solidarité", "fête",
+                  "réunion", "centre", "foire", "groupe", "comité", "voisin", "soutien", "jeunesse", "rencontre", "loisir"],
+    
+    "Transports": ["bus", "train", "route", "voiture", "parking", "circulation", "trajet", "embouteillage", "métro", "chemin",
+                   "tram", "mobilité", "SNCB", "vélo", "trafic", "transport", "station", "routier", "infrastructure", "gare"],
+    
+    "Météo": ["pluie", "tempête", "ensoleillé", "neige", "orages", "brouillard", "température", "climat", "inondation", "gel",
+              "saison", "vent", "prévision", "chaleur", "météo", "vigilance", "brume", "sécheresse", "rafale", "grêle"],
+    
+    "Culture": ["musée", "exposition", "festival", "théâtre", "danse", "concert", "cinéma", "livre", "artiste", "patrimoine",
+                "peinture", "scène", "galerie", "chanson", "spectacle", "littérature", "culture", "histoire", "sculpture", "art"],
+    
+    "Sport": ["football", "match", "stade", "club", "joueur", "entraîneur", "compétition", "championnat", "équipe", "sportif",
+              "score", "ligue", "arbitre", "course", "terrain", "tournoi", "supporter", "record", "médaille", "victoire"],
+    
+    "Sécurité": ["police", "sécurité", "gendarme", "patrouille", "incendie", "accident", "urgence", "alerte", "vol", "brigade",
+                 "secours", "protection", "crime", "incident", "surveillance", "problème", "garde", "force", "urgence", "urgence"],
+    
+    "Immobilier": ["maison", "appartement", "terrain", "achat", "vente", "bail", "loyer", "immeuble", "propriété", "logement",
+                   "marché", "construction", "résidence", "prix", "propriétaire", "quartier", "local", "courtier", "valorisation", "habitat"],
+    
+    "Environnement": ["écologie", "pollution", "déchet", "recyclage", "biodiversité", "nature", "climat", "énergie", "forêt", "plastique",
+                      "qualité", "changement", "faune", "flore", "environnement", "durable", "sauvegarde", "réchauffement", "carbone", "protection"],
+    
+    "Mode de vie": ["loisir", "famille", "bien-être", "santé", "cuisine", "développement", "habitude", "routine", "activité", "vacances",
+                    "loisir", "psychologie", "équilibre", "zen", "relation", "temps", "travail", "réseau", "intérêt", "divertissement"],
+    
+    "Agriculture": ["agriculteur", "ferme", "récolte", "sol", "cultures", "pesticide", "fertilisant", "alimentation", "exploitation", "élevage",
+                    "production", "champ", "saison", "système", "rural", "vignoble", "naturel", "agronome", "terre", "coopérative"],
+    
+    "Affaires": ["entreprise", "commerce", "dirigeant", "directeur", "compte", "clients", "fournisseur", "partenaire", "export", "chiffre",
+                 "concurrence", "carrière", "contrat", "dépense", "succès", "marché", "produit", "opportunité", "économie", "commerce"],
+    
+    "Voyage": ["tourisme", "vacances", "destination", "transport", "hébergement", "voyageur", "billet", "guide", "circuit", "loisir",
+               "site", "saison", "montagne", "rivière", "plage", "séjour", "excursion", "étape", "route", "trajet"],
+    
+    "Technologie": ["numérique", "réseau", "ordinateur", "innovation", "logiciel", "application", "robotique", "téléphone", "donnée", "internet",
+                    "ordinateur", "connexion", "système", "mise", "avancée", "sécurité", "cyber", "informatique", "cloud", "social"],
+    
+    "Histoire": ["ancien", "monument", "époque", "civilisation", "patrimoine", "archéologie", "château", "moyen-âge", "artefact", "héritage",
+                 "culturel", "chronique", "histoire", "mémoire", "relique", "dynastie", "archive", "tradition", "antique", "vestige"],
+    
+    "Société": ["démographie", "population", "égalité", "droits", "justice", "solidarité", "communauté", "minorité", "pauvreté", "aide",
+                "inégalité", "intégration", "éthique", "citoyenneté", "discrimination", "genre", "égalité", "valeurs", "diversité", "exclusion"],
+    
+    "Europe": ["Union", "Bruxelles", "Parlement", "Européen", "politique", "frontière", "libre", "Schengen", "accord", "sanction",
+               "crise", "partenariat", "directive", "droit", "traité", "pays", "économie", "justice", "institutions", "diplomatie"],
+    
+    "Immigration": ["migration", "réfugié", "asile", "étranger", "statut", "nationalité", "visa", "réfugiés", "accueil", "frontière",
+                    "intégration", "population", "régularisation", "demandeur", "droit", "permis", "protection", "expulsion", "citoyenneté", "migrant"],
+    
+    "Emploi": ["recrutement", "emploi", "travail", "chômage", "salaire", "formation", "contrat", "candidat", "carrière", "stage",
+               "entrepreneur", "qualifications", "CV", "entretien", "entreprise", "retraite", "agence", "syndicat", "secteur", "professionnel"],
+    
+    "Énergie": ["électricité", "gaz", "nucléaire", "éolien", "solaire", "énergie", "fossile", "renouvelable", "batterie", "pétrole",
+                "réseau", "production", "consommation", "chaleur", "biomasse", "hydraulique", "centrale", "émission", "réchauffement", "économies"]
+}
