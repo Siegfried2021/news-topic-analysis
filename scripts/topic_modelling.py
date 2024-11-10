@@ -1,164 +1,80 @@
-# import json
-# from sklearn.feature_extraction.text import CountVectorizer
-# from sklearn.decomposition import LatentDirichletAllocation
-# from sklearn.model_selection import GridSearchCV
-# import numpy as np
-
-# # Load the articles
-# with open("data/processed_articles_RTBF.json", "r", encoding="utf-8") as f:
-#     articles = json.load(f)
-
-# # Prepare data for LDA
-# content_data = [" ".join(article["processed_content"]) for article in articles]
-# title_data = [" ".join(article["processed_title"]) for article in articles]
-
-# # Initialize CountVectorizer for bag-of-words
-# vectorizer = CountVectorizer(max_df=0.95, min_df=2)  # Adjust stop words as needed
-
-# # Transform data into a document-term matrix for content and title
-# content_dtm = vectorizer.fit_transform(content_data)
-# title_dtm = vectorizer.fit_transform(title_data)
-
-# # Define a range for the number of topics
-# topic_range = list(range(10, 16))
-
-# # Function to perform grid search and select the best LDA model
-# def find_best_lda(dtm, topic_range):
-#     # Define the LDA model and grid search parameters
-#     lda = LatentDirichletAllocation(random_state=0)
-#     param_grid = {'n_components': topic_range, 'learning_decay': [0.5, 0.7, 0.9]}
-#     grid_search = GridSearchCV(lda, param_grid, cv=3, n_jobs=-1, verbose=2)
-#     grid_search.fit(dtm)
-
-#     # Get the best model based on grid search results
-#     best_lda_model = grid_search.best_estimator_
-#     best_num_topics = best_lda_model.n_components
-#     return best_lda_model, best_num_topics
-
-# # Find the best model for content and title
-# print("Finding best LDA model for content...")
-# best_lda_content, best_num_topics_content = find_best_lda(content_dtm, topic_range)
-
-# print("Finding best LDA model for title...")
-# best_lda_title, best_num_topics_title = find_best_lda(title_dtm, topic_range)
-
-# # Function to assign topics to articles
-# def assign_topics(lda_model, dtm):
-#     # Get the topic distribution for each document
-#     topic_distributions = lda_model.transform(dtm)
-#     # Assign each document the topic with the highest probability
-#     assigned_topics = np.argmax(topic_distributions, axis=1)
-#     return assigned_topics.tolist()
-
-# # Assign topics to each article's content and title using the best LDA models
-# assigned_topics_content = assign_topics(best_lda_content, content_dtm)
-# assigned_topics_title = assign_topics(best_lda_title, title_dtm)
-
-# # Save results
-# result = {
-#     "best_num_topics_content": best_num_topics_content,
-#     "assigned_topics_content": assigned_topics_content,
-#     "best_num_topics_title": best_num_topics_title,
-#     "assigned_topics_title": assigned_topics_title
-# }
-
-# with open("data/assigned_topics.json", "w", encoding="utf-8") as f:
-#     json.dump(result, f, ensure_ascii=False, indent=4)
-
-# print("Assigned topics have been saved to 'assigned_topics.json'")
-
+import os
 import json
+from datetime import datetime
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.model_selection import GridSearchCV
 import numpy as np
 import pyLDAvis
 
-# Load the articles
-with open("data/processed_articles_RTBF.json", "r", encoding="utf-8") as f:
-    articles = json.load(f)
+def load_processed_articles(file_path):
+    with open(file_path, "r", encoding="utf-8") as f:
+        return json.load(f)
 
-# Prepare data for LDA
-content_data = [" ".join(article["processed_content"]) for article in articles]
-title_data = [" ".join(article["processed_title"]) for article in articles]
+def create_dtm(data, max_df=0.5, min_df=2):
+    vectorizer = CountVectorizer(max_df=max_df, min_df=min_df)
+    return vectorizer.fit_transform(data), vectorizer
 
-# Initialize separate CountVectorizers for content and title
-content_vectorizer = CountVectorizer(max_df=0.95, min_df=2)
-title_vectorizer = CountVectorizer(max_df=0.95, min_df=2)
-
-# Transform data into a document-term matrix for content and title
-content_dtm = content_vectorizer.fit_transform(content_data)
-title_dtm = title_vectorizer.fit_transform(title_data)
-
-# Define a range for the number of topics
-topic_range = list(range(10, 16))
-
-# Function to perform grid search and select the best LDA model
 def find_best_lda(dtm, topic_range):
     lda = LatentDirichletAllocation(random_state=0)
     param_grid = {'n_components': topic_range, 'learning_decay': [0.5, 0.7, 0.9]}
     grid_search = GridSearchCV(lda, param_grid, cv=3, n_jobs=-1, verbose=2)
     grid_search.fit(dtm)
-    best_lda_model = grid_search.best_estimator_
-    best_num_topics = best_lda_model.n_components
-    return best_lda_model, best_num_topics
+    return grid_search.best_estimator_
 
-# Find the best model for content and title
-print("Finding best LDA model for content...")
-best_lda_content, best_num_topics_content = find_best_lda(content_dtm, topic_range)
-
-print("Finding best LDA model for title...")
-best_lda_title, best_num_topics_title = find_best_lda(title_dtm, topic_range)
-
-# Function to assign topics to articles
 def assign_topics(lda_model, dtm):
-    topic_distributions = lda_model.transform(dtm)
-    assigned_topics = np.argmax(topic_distributions, axis=1)
-    return assigned_topics.tolist()
+    return np.argmax(lda_model.transform(dtm), axis=1).tolist()
 
-# Assign topics to each article's content and title using the best LDA models
-assigned_topics_content = assign_topics(best_lda_content, content_dtm)
-assigned_topics_title = assign_topics(best_lda_title, title_dtm)
+def generate_pyldavis(lda_model, dtm, vectorizer, directory="pyLDAvis"):
+    # Ensure directory exists
+    os.makedirs(directory, exist_ok=True)
+    
+    # Generate filename with current date
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    file_path = os.path.join(directory, f"content_topics_vis_{current_date}.html")
 
-# Save results
-result = {
-    "best_num_topics_content": best_num_topics_content,
-    "assigned_topics_content": assigned_topics_content,
-    "best_num_topics_title": best_num_topics_title,
-    "assigned_topics_title": assigned_topics_title
-}
+    # Create the pyLDAvis visualization
+    vocab = vectorizer.get_feature_names_out()
+    panel = pyLDAvis.prepare(
+        topic_term_dists=lda_model.components_,
+        doc_topic_dists=lda_model.transform(dtm),
+        doc_lengths=dtm.sum(axis=1).A1,
+        vocab=vocab,
+        term_frequency=dtm.sum(axis=0).A1
+    )
+    pyLDAvis.save_html(panel, file_path)
+    print(f"Visualization saved as '{file_path}'")
 
-with open("data/assigned_topics.json", "w", encoding="utf-8") as f:
-    json.dump(result, f, ensure_ascii=False, indent=4)
+def run_modeling():
+    # Get today's date to use for filenames
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    
+    # Define input and output files with the current date
+    input_file = f"data/processed_articles_RTBF_{current_date}.json"
+    output_file = f"data/processed_articles_RTBF_{current_date}.json"
+    
+    # Load processed articles for today
+    articles = load_processed_articles(input_file)
+    content_data = [" ".join(article["processed_content"]) for article in articles]
+    
+    # Create the document-term matrix (DTM) and vectorizer for content
+    content_dtm, content_vectorizer = create_dtm(content_data)
+    
+    # Find the best LDA model using grid search
+    best_lda_content = find_best_lda(content_dtm, topic_range=range(8, 15))
+    
+    # Assign topics to the articles
+    assigned_topics_content = assign_topics(best_lda_content, content_dtm)
 
-print("Assigned topics have been saved to 'assigned_topics.json'")
+    # Add topic numbers to articles and save them back
+    for article, topic in zip(articles, assigned_topics_content):
+        article["topic_content"] = topic
 
-# Prepare and save the pyLDAvis visualization for content topics
-print("Generating pyLDAvis visualization for content topics...")
-vocab_content = content_vectorizer.get_feature_names_out()
-term_frequency_content = content_dtm.sum(axis=0).A1
+    # Save updated articles with date-specific output file
+    os.makedirs("data", exist_ok=True)
+    with open(output_file, "w", encoding="utf-8") as f:
+        json.dump(articles, f, ensure_ascii=False, indent=4)
+    print(f"Processed articles with topics saved to {output_file}")
 
-content_panel = pyLDAvis.prepare(
-    topic_term_dists=best_lda_content.components_,
-    doc_topic_dists=best_lda_content.transform(content_dtm),
-    doc_lengths=content_dtm.sum(axis=1).A1,
-    vocab=vocab_content,
-    term_frequency=term_frequency_content
-)
-pyLDAvis.save_html(content_panel, 'content_topics_vis.html')
-print("Content topic visualization saved as 'content_topics_vis.html'.")
-
-# Repeat for title topics
-print("Generating pyLDAvis visualization for title topics...")
-vocab_title = title_vectorizer.get_feature_names_out()
-term_frequency_title = title_dtm.sum(axis=0).A1
-
-title_panel = pyLDAvis.prepare(
-    topic_term_dists=best_lda_title.components_,
-    doc_topic_dists=best_lda_title.transform(title_dtm),
-    doc_lengths=title_dtm.sum(axis=1).A1,
-    vocab=vocab_title,
-    term_frequency=term_frequency_title
-)
-pyLDAvis.save_html(title_panel, 'title_topics_vis.html')
-print("Title topic visualization saved as 'title_topics_vis.html'.")
+    # Generate and save a new pyLDAvis visualization with the current date in the filename
+    generate_pyldavis(best_lda_content, content_dtm, content_vectorizer)

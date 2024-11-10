@@ -1,59 +1,50 @@
-import json
-import re
 import os
+import json
 import spacy
-import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
+from datetime import datetime
 
-# Load data
-with open("data/articles_RTBF.json", "r") as file:
-    data = json.load(file)
-
-# Initialize tools
-nltk.download('stopwords')
-nltk.download('punkt_tab')
-nltk.download('wordnet')
-french_stopwords = set(stopwords.words("french"))
+# Setup NLP tools
+nlp = spacy.load("fr_core_news_md")
+stopwords_fr = set(stopwords.words("french"))
 lemmatizer = WordNetLemmatizer()
 
-# Load Spacy French model for lemmatization
-nlp = spacy.load("fr_core_news_md")
-
-# Preprocess function
 def preprocess_text(text):
-    # Tokenize the text with nltk
     tokens = word_tokenize(text, language='french')
-    
-    # Filter out punctuation and stop words
-    tokens = [token for token in tokens if token.isalnum() and token.lower() not in french_stopwords]
-    
-    # Lemmatize using spacy
+    tokens = [token for token in tokens if token.isalnum() and token.lower() not in stopwords_fr]
     doc = nlp(" ".join(tokens))
-    lemmatized_tokens = [token.lemma_ for token in doc]
-    
-    return lemmatized_tokens
+    return [token.lemma_ for token in doc]
 
-def preprocess_and_save(data, output_filename):
+def preprocess_and_save(input_file, output_file):
+    # Load the data from the input file
+    with open(input_file, "r", encoding="utf-8") as file:
+        data = json.load(file)
+
+    # Process each article and add processed content and title
     processed_data = []
-    
     for article in data:
-        # Process the title and content using a custom preprocess_text function
-        processed_content = preprocess_text(article["content"])
-        processed_title = preprocess_text(article["title"])
-        
-        # Append the processed article to the list
         processed_data.append({
             "date": article.get("date"),
-            "processed_content": processed_content,
-            "processed_title": processed_title
+            "processed_content": preprocess_text(article["content"]),
+            "processed_title": preprocess_text(article["title"])
         })
+
+    # Ensure the directory exists and save the processed data
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    with open(output_file, "w", encoding='utf-8') as f:
+        json.dump(processed_data, f, ensure_ascii=False, indent=4)
+
+    print(f"Processed data saved to {output_file}")
+
+def run_preprocessing():
+    # Get today's date in the format used for filenames
+    current_date = datetime.now().strftime('%Y-%m-%d')
     
-    os.makedirs(os.path.dirname(output_filename), exist_ok=True)
-
-    # Save processed data to a JSON file
-    with open(output_filename, "w", encoding='utf-8') as outfile:
-        json.dump(processed_data, outfile, ensure_ascii=False, indent=4)
-
-preprocess_and_save(data, "data/processed_articles_RTBF.json")
+    # Define input and output files with the current date
+    input_file = f"data/articles_RTBF_{current_date}.json"
+    output_file = f"data/processed_articles_RTBF_{current_date}.json"
+    
+    # Process and save data
+    preprocess_and_save(input_file, output_file)
